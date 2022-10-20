@@ -36,7 +36,8 @@ class IceCreamOrder(object):
         self.topping1= topping1
         self.topping2= topping2
     def price(self):
-        return scoops
+        if 
+        return self.scoops*2.75+
 #end of Gloria's code
 class food(object):
     def __init__(self, meal1, meal2, meal3):
@@ -52,7 +53,7 @@ class Pizza(object):
     self.topping3 = topping3
     
     def pizza_order(self):
-        if
+        if (self.topping1 + self.topping2) == "Ha"
     
         
 class food(object):
