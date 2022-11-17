@@ -156,7 +156,7 @@ if __name__ == "__main__":
     }
 
 
-    subFuncs = createUI(buttonsDict,textDict)[0];
+    object_draw = createUI(buttonsDict,textDict);
 
 
     # run the engine
@@ -171,11 +171,7 @@ if __name__ == "__main__":
         i+=1;
         
         
-        for fun in subFuncs:
-        
-            msg1 = msg(random.randint(0,100));
-            fun(msg1);
-            
+   
 
         objectDraw.run();
         time.sleep(0.1);
