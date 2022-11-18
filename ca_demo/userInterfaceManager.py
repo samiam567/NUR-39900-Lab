@@ -2,10 +2,10 @@
 import time
 import subprocess
 from math import sqrt
+from random import random
 
 # import graphics elements
-from IAC_Button import IAC_Button
-from IAC_textBox_Button import IAC_textBox_Button
+from CA_Button import CA_Button
 from game_engine.ObjectDraw import ObjectDraw
 from game_engine.Text import Text
 from game_engine.Sprite import Sprite
@@ -25,164 +25,82 @@ CA_text = None;
 
 
 def get_prediction(input):
+
+    positive_answers = ["You will live... for now", "You may actually make it home", "you're luckier than the last patient was"];
+    negative_answers = ["Obesity is a risk factor...","You have 5 to live...4...3...2..","student 8 will paint your gravestone","I hope you've made your Will", "Do you have funeral plans yet?", "How old are you again?", "Well you were a high risk patient...", "honestly it's a skill issue"];
+
+
     # call neural net
     prediction = neuralnet_predict(random.random());
 
     # update some text on the screen
-    if (prediction > 0.75):
-        CA_text.setText("you gon die :(");
+    if (prediction > 0.5):
+        response = negative_answers[(int) (random.random() * len(negative_answers))];
+        CA_text.setText(response);
     else:
-        CA_text.setText("You gon live... for now");
+        response = positive_answers[(int) (random.random() * len(positive_answers))];
+        CA_text.setText(response);
 
-def createButtons(buttons, objectDraw):
-    xStep = objectDraw.screenSizeX / len(buttons);
-    
-    multFromBtm = 1-screenSplitButton;
-
-    screenSizeY = objectDraw.screenSizeY;
-    
-    i = 0;
-    for key in buttons:
-        newBtn = IAC_Button(key, get_prediction,objectDraw, i * xStep + xStep/2 , screenSizeY-screenSizeY*multFromBtm,xSize=xStep,ySize=screenSizeY*multFromBtm, params=buttons[key]);
-        objectDraw.add(newBtn);
-        i += 1;
-
-
-class TextUpdater():
-    def __init__(self, text, convertMsgToValueFunc, valueRange = (-1000000000000000,10000000000000)):
-        self.text = text;
-        self.valueRange = valueRange
-        self.convertMsgToValue = convertMsgToValueFunc;
-    def subFunction(self,msg):
-        value = self.convertMsgToValue(msg);
-        self.text.setText(self.text.name + ": " + str(value));
-        if (float(value) > self.valueRange[0] and float(value) < self.valueRange[1]):
-            self.text.setColor(colorGreen);
-        else:
-            self.text.setColor(colorRed);
-
-
-def createTopicStatuses(topics,objectDraw):
-
-    # the list of callback functions for the text objects
-    subFuncs = [];
-
-    # figure out spacing and fontsize
-    yStep = objectDraw.screenSizeY*screenSplitText // (1+len(topics));
-    fontSize = 1.0 * yStep;
-
-    # create the text objects
-    i = 0;
-    for topicName in topics:
-        
-        text1 = Text(topicName,screenSizeX*0.5-10*fontSize,(5+fontSize) * i + fontSize,fontSize=fontSize,highLightColor=(10,10,10));
-        objectDraw.add(text1); # add to object draw to be rendered
-        
-        # create object to control the color of the text field with the passed function to convert the msg to a value
-        textUpdate = TextUpdater(text1,valueRange=topics[topicName][0], convertMsgToValueFunc=topics[topicName][1]);
-
-        # append the subscription callback function
-        subFuncs.append(textUpdate.subFunction);
-    
-        i += 1;
-
-    return subFuncs;
+    prevPos = CA_text.getPosition();
+    CA_text.setPosition((screenSizeX/2-5*len(response),prevPos[1]));
 
 
 # define params and make objectDraw
-
 screenScale = 1;
 screenSizeX = int(1000 * screenScale);
 screenSizeY = int(500 * screenScale);
 
 diagonal = sqrt(screenSizeY**2 + screenSizeX**2);
 
-objectDraw = ObjectDraw(screenSizeX,screenSizeY,frameCaption="Coding to prevent coding");
-
-
-def createUI(buttonsDict, textDict):
-    # create background image
-    background = Sprite("backgroundlogo",screenSizeX/2,screenSizeY*0.45,scaling=diagonal/1000,imgSource="./assets/ekg_image.jpeg");
-    objectDraw.setBackgroundColor((0,0,0));
-    objectDraw.add(background);
+objectDraw = ObjectDraw(screenSizeX,screenSizeY,frameCaption="Heart Attack Shack - Coding to prevent coding");
 
 
 
 
 
+# add all the elements to the object draw
 
-    # create pointless add-ons to make it look cooler
-    hologram1 = Sprite("hologram_rotator_1", screenSizeX*0.9,screenSizeY*0.7,diagonal/9000,"./assets/heart.png");
-    hologram1.setAngularVelocity(1);
-    objectDraw.add(hologram1);
-
-    hologram2 = Sprite("hologram_rotator_2", screenSizeX*0.07,screenSizeY*0.17,diagonal/10000,"./assets/heart.png");
-    hologram2.setAngularVelocity(-1.7);
-    objectDraw.add(hologram2);
+# create background image
+background = Sprite("backgroundlogo",screenSizeX/2,screenSizeY*0.45,scaling=diagonal/1000,imgSource="./assets/ekg_image.jpeg");
+objectDraw.setBackgroundColor((0,0,0));
+objectDraw.add(background);
 
 
-    # create buttons and text messages
+# create pointless add-ons to make it look cooler
+hologram1 = Sprite("hologram_rotator_1", screenSizeX*0.9,screenSizeY*0.7,diagonal/9000,"./assets/heart.png");
+hologram1.setAngularVelocity(1);
+objectDraw.add(hologram1);
+
+hologram2 = Sprite("hologram_rotator_2", screenSizeX*0.07,screenSizeY*0.17,diagonal/10000,"./assets/heart.png");
+hologram2.setAngularVelocity(-1.7);
+objectDraw.add(hologram2);
 
 
-    
+# create output text
+fontSize = 30;
+CA_text = Text("Are you going to have CA??",screenSizeX*0.35,screenSizeY*0.5,fontSize=fontSize,highLightColor=(255,255,255));
+CA_text.color = (0,0,0);
+CA_text.highLightColor = (255,255,255);
+objectDraw.add(CA_text); # add to object draw to be rendered
 
-    createButtons(buttonsDict,objectDraw);
+bYSize = 40;
+button = CA_Button("Ask Predict-O-Bot 9000!", get_prediction,objectDraw, screenSizeX/2, screenSizeY-bYSize*1.5,xSize=screenSizeX/2,ySize=bYSize, params="none");
 
+objectDraw.add(button);
 
+objectDraw.start();
 
+# run the engine
+class msg():
+    def __init__(self,data):
+        self.data = data;
 
+import random
 
-    # start the engine
-    objectDraw.start();
+i = 1;
+while(True):
+    i+=1;
 
-    return objectDraw;
-
-
-
-
-
-
-if __name__ == "__main__":
-
-    def msg_to_val(msg):
-        return msg.data;
-
-    # title, command
-    buttonsDict = {
-        "Am I gonna die?": ("echo 'command send ct11'",""),
-    };
-
-    # topicname, (lower, upper)
-    textDict = {
-        "novatel/bottom/bestpos" : ((10,1000),msg_to_val),
-        "raptor_dbw_interface/imu" : ((1,100),msg_to_val),
-        "raptor_dbw_interface/ctstate": ((0,20),msg_to_val),
-        "raptor_dbw_interface/wheel_speed_report": ((10,11),msg_to_val),
-        "raptor_dbw_interface/imu_error": ((10,500),msg_to_val),
-        "raptor_dbw_interface/gps_covariance": ((100,300),msg_to_val)
- 
-    }
-
-
-    object_draw = createUI(buttonsDict,textDict);
-
-    fontSize = 15;
-    CA_text = Text("Are you going to have CA??",screenSizeX*0.5,screenSizeY*0.5,fontSize=fontSize,highLightColor=(10,10,10));
-    CA_text.color = (0,0,0);
-    CA_text.highLightColor = (255,255,255);
-    object_draw.add(CA_text); # add to object draw to be rendered
-
-    # run the engine
-    class msg():
-        def __init__(self,data):
-            self.data = data;
-
-    import random
-
-    i = 1;
-    while(True):
-        i+=1;
-
-        objectDraw.run();
-        time.sleep(0.1);
+    objectDraw.run();
+    time.sleep(0.1);
 
