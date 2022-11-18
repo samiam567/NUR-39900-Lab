@@ -13,7 +13,7 @@ class IAC_Button(Button):
 
     def onButtonClick(self):
         if (not self.IS_ON):
-            self.color = (0,150,0);
+            # self.color = (0,150,0);
             self.IS_ON = True;
         else:
             self.IS_ON = False;

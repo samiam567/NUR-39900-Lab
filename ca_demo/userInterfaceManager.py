@@ -18,9 +18,16 @@ screenSplitButton = 0.9;
 
 
 
+CA_text = None;
 
-def sendCommand(commandStr, shell=True):
-    subprocess.run(commandStr, shell=shell);
+
+def get_prediction(commandStr, shell=True):
+    print("you gon die bro");
+
+    # call neural net
+
+    # update some text on the screen
+    CA_text.setText("you gon die :(");
 
 def createButtons(buttons, objectDraw):
     xStep = objectDraw.screenSizeX / len(buttons);
@@ -31,7 +38,7 @@ def createButtons(buttons, objectDraw):
     
     i = 0;
     for key in buttons:
-        newBtn = IAC_Button(key, sendCommand,objectDraw, i * xStep + xStep/2 , screenSizeY-screenSizeY*multFromBtm,xSize=xStep,ySize=screenSizeY*multFromBtm, params=buttons[key]);
+        newBtn = IAC_Button(key, get_prediction,objectDraw, i * xStep + xStep/2 , screenSizeY-screenSizeY*multFromBtm,xSize=xStep,ySize=screenSizeY*multFromBtm, params=buttons[key]);
         objectDraw.add(newBtn);
         i += 1;
 
@@ -75,11 +82,6 @@ def createTopicStatuses(topics,objectDraw):
         i += 1;
 
     return subFuncs;
-
-
-
-
-
 
 
 # define params and make objectDraw
@@ -153,11 +155,15 @@ if __name__ == "__main__":
         "raptor_dbw_interface/wheel_speed_report": ((10,11),msg_to_val),
         "raptor_dbw_interface/imu_error": ((10,500),msg_to_val),
         "raptor_dbw_interface/gps_covariance": ((100,300),msg_to_val)
+ 
     }
 
 
     object_draw = createUI(buttonsDict,textDict);
 
+    fontSize = 15;
+    CA_text = Text("Are you going to have CA??",screenSizeX*0.5,screenSizeY*0.5,fontSize=fontSize,highLightColor=(10,10,10));
+    object_draw.add(CA_text); # add to object draw to be rendered
 
     # run the engine
     class msg():
@@ -169,9 +175,6 @@ if __name__ == "__main__":
     i = 1;
     while(True):
         i+=1;
-        
-        
-   
 
         objectDraw.run();
         time.sleep(0.1);
