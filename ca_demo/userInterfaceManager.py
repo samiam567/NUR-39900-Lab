@@ -1,14 +1,17 @@
+# import python code
+import time
+import subprocess
+from math import sqrt
 
-
-
+# import graphics elements
 from IAC_Button import IAC_Button
 from IAC_textBox_Button import IAC_textBox_Button
 from game_engine.ObjectDraw import ObjectDraw
 from game_engine.Text import Text
 from game_engine.Sprite import Sprite
-import time
-import subprocess
-from math import sqrt
+
+# import neural net
+from neural_net.ca_neural_net import neuralnet_predict
 
 colorRed = (255,0,0);
 colorGreen = (0,255,0);
@@ -21,13 +24,15 @@ screenSplitButton = 0.9;
 CA_text = None;
 
 
-def get_prediction(commandStr, shell=True):
-    print("you gon die bro");
-
+def get_prediction(input):
     # call neural net
+    prediction = neuralnet_predict(random.random());
 
     # update some text on the screen
-    CA_text.setText("you gon die :(");
+    if (prediction > 0.75):
+        CA_text.setText("you gon die :(");
+    else:
+        CA_text.setText("You gon live... for now");
 
 def createButtons(buttons, objectDraw):
     xStep = objectDraw.screenSizeX / len(buttons);
@@ -97,7 +102,7 @@ objectDraw = ObjectDraw(screenSizeX,screenSizeY,frameCaption="Coding to prevent 
 
 def createUI(buttonsDict, textDict):
     # create background image
-    background = Sprite("backgroundlogo",screenSizeX/2,screenSizeY*0.45,scaling=diagonal/1000,imgSource="./assets/Blackandgoldlogo.png");
+    background = Sprite("backgroundlogo",screenSizeX/2,screenSizeY*0.45,scaling=diagonal/1000,imgSource="./assets/ekg_image.jpeg");
     objectDraw.setBackgroundColor((0,0,0));
     objectDraw.add(background);
 
@@ -107,11 +112,11 @@ def createUI(buttonsDict, textDict):
 
 
     # create pointless add-ons to make it look cooler
-    hologram1 = Sprite("hologram_rotator_1", screenSizeX*0.9,screenSizeY*0.7,diagonal/9000,"./assets/hologram rotator.png");
+    hologram1 = Sprite("hologram_rotator_1", screenSizeX*0.9,screenSizeY*0.7,diagonal/9000,"./assets/heart.png");
     hologram1.setAngularVelocity(1);
     objectDraw.add(hologram1);
 
-    hologram2 = Sprite("hologram_rotator_2", screenSizeX*0.07,screenSizeY*0.17,diagonal/10000,"./assets/hologram_radar.jpg");
+    hologram2 = Sprite("hologram_rotator_2", screenSizeX*0.07,screenSizeY*0.17,diagonal/10000,"./assets/heart.png");
     hologram2.setAngularVelocity(-1.7);
     objectDraw.add(hologram2);
 
@@ -163,6 +168,8 @@ if __name__ == "__main__":
 
     fontSize = 15;
     CA_text = Text("Are you going to have CA??",screenSizeX*0.5,screenSizeY*0.5,fontSize=fontSize,highLightColor=(10,10,10));
+    CA_text.color = (0,0,0);
+    CA_text.highLightColor = (255,255,255);
     object_draw.add(CA_text); # add to object draw to be rendered
 
     # run the engine
